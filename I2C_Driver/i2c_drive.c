@@ -123,8 +123,18 @@ void I2C_write(char i2c, char address, char* data, char dataSize)
 	I2C_data(i2c, data, dataSize);
 }
 
-char I2C_read(char i2c, char address, char dataSize){
+char I2C_read(char i2c, char address, char* data, char dataSize){
+	uint8_t count = 0;
 	I2C_start(i2c, address, I2C_READ);
+	char received = 0;
 	
-	return 0;
+	while (count < dataSize){
+		while ((I2C1->SR1 & (1 << 6)) == 0); //Wait until RxNE is set
+		data[count] = I2C1->DR;
+		count++;
+	}
+	
+	
+	received = I2C1->DR;
+	return received;
 }

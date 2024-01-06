@@ -126,16 +126,78 @@ void calculate(char *data)
 	}
 }
 
+void AHT20_Init(){
+	DelayMs(20);
+	
+	//Send Init command to AHT20
+	char rx_data;
+	I2C_read(1, 0x38, &rx_data, 1);
+	if(!(rx_data & (1<<3))){
+		char data[] = {0xBE, 0x08, 0x00};
+		I2C_write(1, 0x38, data, 3);
+	}
+	DelayMs(10);
+	
+	
+	//Send trigger measurement command
+	char trigger_command[] = {0xAC, 0x08, 0x00};
+	I2C_write(1, 0x38, trigger_command, 3);
+	DelayMs(80);
+	
+	//Wait for measurement to be completed
+	I2C_read(1, 0x38, &rx_data, 1);
+	
+}
+
+void AHT20_GetData(char* sensor_data){
+	//Send trigger measurement command
+	char trigger_command[] = {0xAC, 0x08, 0x00};
+	I2C_write(1, 0x38, trigger_command, 3);
+	DelayMs(80);
+	
+	//Wait for measurement to be completed
+	char rx_data;
+	I2C_read(1, 0x38, &rx_data, 1);	
+	while(rx_data & (1 << 7)); //Wait until slave is not busy with measurement
+	
+	//Get data
+	I2C_read(1, 0x38, sensor_data, 6);
+	
+}
+
+void readData(char *rx_data, char size)
+{
+	for (int i = 0; i < size; i++)
+	{
+		//rx_data[i] = I2C_read(1, 0x38, 1);
+	}
+	
+}
+
+
 int main(void)
 {
 	systick_init();
 	I2C_init(1);
+	AHT20_Init();
+	
+	char sensor_data[6];
+	AHT20_GetData(sensor_data);
+	
+	/*
+	char *rx;
+	readData(rx, 3);
+	
+	uint8_t data1 = rx[0];
+	uint8_t data2 = rx[1];
+	uint8_t data3 = rx[2];
+	*/
 	while (1)
 	{
-		char data[] = {0x20, 0x51, 0x71};
+		//char data[] = {0x20, 0x51, 0x71};
 		//I2C_write(1, 0x38, data, 3);
 		//I2C_start(1);
-		I2C_read(1, 0x38, 1);
+		//char rx_data = I2C_read(1, 0x38, 1);
 		/* Step 1: Wait 40ms after power-on */
     //AHT20_WaitAfterPowerOn();
 
