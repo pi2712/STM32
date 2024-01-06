@@ -25,29 +25,32 @@ void AHT20_WaitAfterPowerOn(void)
 	DelayMs(40);
 	 
 	
-	I2C_start(1);
-	I2C_add(1, AHT20_ADDRESS, 0);
-	I2C_data(1, AHT20_READ_STATUS);
+	I2C_start(1, 0x38);
+	//I2C_add(1, AHT20_ADDRESS, 0);
+	//I2C_data(1, AHT20_READ_STATUS);
 	I2C_stop(1);
 	
-	/*Read the status word */
+	
+	//Read the status word 
 	AHT20_ReadData(&status, 1);
 	
-	/* check bit[3] (CAL enable) */
+	
+	//check bit[3] (CAL enable)
 	if (!(status & 0x08))
 	{
-		/* CAL is not enable, need to initialize */
+		//CAL is not enable, need to initialize
 		AHT20_Initialize();
 	}
+	
 }
 void AHT20_Initialize(void)
 {
 	/* send 0xBE command for initialization */
-	  I2C_start(1);
+	  I2C_start(1, 0x38);
     I2C_add(1, AHT20_ADDRESS, 0);
-    I2C_data(1, 0xBE);
-    I2C_data(1, 0x08);
-    I2C_data(1, 0x00);
+    //I2C_data(1, 0xBE);
+    //I2C_data(1, 0x08);
+    //I2C_data(1, 0x00);
     I2C_stop(1);
 
     /* Wait for 10ms */
@@ -57,7 +60,7 @@ void AHT20_Initialize(void)
 void AHT20_ReadData(char *readBuffer, char bufferSize)
 {
 	int i;
-	I2C_start(1);
+	I2C_start(1, 0x38);
 	
 	/*Send the device address with Read bit */
 	I2C_add(1, AHT20_ADDRESS, 1);
@@ -65,9 +68,9 @@ void AHT20_ReadData(char *readBuffer, char bufferSize)
 
 	 for (i = 0; i < bufferSize - 1; i++)
     {
-        readBuffer[i] = I2C_data(1, 1);
+        //readBuffer[i] = I2C_data(1, '1', 1);
     }
-	readBuffer[i] = I2C_data(1, 0);
+	readBuffer[i] = I2C_data(1, 0, 1);
 	I2C_stop(1);
 	
 }
@@ -79,12 +82,12 @@ void AHT20_TriggerMeasurement(void)
 	char command_bytes[3] = {0xAC, 0x33, 0x00};
 	
 	/*send 0xAC for triggering measurement */
-	I2C_start(1);
+	I2C_start(1, (0x38));
 	I2C_add(1, AHT20_ADDRESS, 0);
 	/* loop through the command_bytes and send each bytes */
 	for (i = 0; i < 3; i++)
 	{
-		I2C_data(1, command_bytes[i]);
+		//I2C_data(1, command_bytes[i]);
 	}
 	I2C_stop(1);
 }
@@ -126,12 +129,14 @@ void calculate(char *data)
 int main(void)
 {
 	systick_init();
-	I2C_init(1, I2C_SM);
+	I2C_init(1);
 	while (1)
 	{
-		I2C_start(1);
+		char data[] = {0x20, 0x51, 0x71};
+		I2C_write(1, 0x38, data, 3);
+		//I2C_start(1);
 		/* Step 1: Wait 40ms after power-on */
-    AHT20_WaitAfterPowerOn();
+    //AHT20_WaitAfterPowerOn();
 
     /* Step 2: Trigger measurement */
 		//AHT20_TriggerMeasurement();
