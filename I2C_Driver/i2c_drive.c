@@ -20,7 +20,7 @@ void I2C_init(char i2c)
 	}
 }
 /* start step */
-void I2C_start(char i2c, uint8_t address) 
+void I2C_start(char i2c, uint8_t address, uint8_t ReadWriteMode) 
 {
 	uint16_t status;
 	if (i2c == 1)
@@ -29,7 +29,7 @@ void I2C_start(char i2c, uint8_t address)
 		while ((I2C1->SR1 & 1) == 0);/*wait SB bit = 1, if =1 it means start signal accepted*/
 		//Read SR1 reg and write data to DR reg to clear SB flag
 		status = I2C1->SR1;
-		I2C1->DR = (address) << 1;
+		I2C1->DR = ((address) << 1) | ReadWriteMode;
 		while(I2C1->SR1 & (1 << 0)); //Wait to reset SB bit
 		while(!(I2C1->SR1 & (1 << 1)));//Wait ADDR bit to set
 		
@@ -119,6 +119,12 @@ void I2C_write(char i2c, char address, char* data, char dataSize)
 	}
 	I2C_stop(i2c);
 	*/
-	I2C_start(i2c, address);
+	I2C_start(i2c, address, I2C_WRITE);
 	I2C_data(i2c, data, dataSize);
+}
+
+char I2C_read(char i2c, char address, char dataSize){
+	I2C_start(i2c, address, I2C_READ);
+	
+	return 0;
 }

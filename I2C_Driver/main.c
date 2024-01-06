@@ -25,7 +25,7 @@ void AHT20_WaitAfterPowerOn(void)
 	DelayMs(40);
 	 
 	
-	I2C_start(1, 0x38);
+	//I2C_start(1, 0x38);
 	//I2C_add(1, AHT20_ADDRESS, 0);
 	//I2C_data(1, AHT20_READ_STATUS);
 	I2C_stop(1);
@@ -46,7 +46,7 @@ void AHT20_WaitAfterPowerOn(void)
 void AHT20_Initialize(void)
 {
 	/* send 0xBE command for initialization */
-	  I2C_start(1, 0x38);
+	  //I2C_start(1, 0x38);
     I2C_add(1, AHT20_ADDRESS, 0);
     //I2C_data(1, 0xBE);
     //I2C_data(1, 0x08);
@@ -60,7 +60,7 @@ void AHT20_Initialize(void)
 void AHT20_ReadData(char *readBuffer, char bufferSize)
 {
 	int i;
-	I2C_start(1, 0x38);
+	//I2C_start(1, 0x38);
 	
 	/*Send the device address with Read bit */
 	I2C_add(1, AHT20_ADDRESS, 1);
@@ -82,7 +82,7 @@ void AHT20_TriggerMeasurement(void)
 	char command_bytes[3] = {0xAC, 0x33, 0x00};
 	
 	/*send 0xAC for triggering measurement */
-	I2C_start(1, (0x38));
+	//I2C_start(1, (0x38));
 	I2C_add(1, AHT20_ADDRESS, 0);
 	/* loop through the command_bytes and send each bytes */
 	for (i = 0; i < 3; i++)
@@ -133,8 +133,9 @@ int main(void)
 	while (1)
 	{
 		char data[] = {0x20, 0x51, 0x71};
-		I2C_write(1, 0x38, data, 3);
+		//I2C_write(1, 0x38, data, 3);
 		//I2C_start(1);
+		I2C_read(1, 0x38, 1);
 		/* Step 1: Wait 40ms after power-on */
     //AHT20_WaitAfterPowerOn();
 
